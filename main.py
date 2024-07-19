@@ -6,12 +6,20 @@ def fetch_weather(city):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    weather = soup.find('div', class_='CurrentConditions--phraseValue--2xXSr').text
-    temperature = soup.find('span', class_='CurrentConditions--tempValue--3KcTQ').text
+    weather_div = soup.find('div', class_='CurrentConditions--phraseValue--2xXSr')
+    temp_span = soup.find('span', class_='CurrentConditions--tempValue--3KcTQ')
 
-    return weather, temperature
+    if weather_div and temp_span:
+        weather = weather_div.text
+        temperature = temp_span.text
+        return weather, temperature
+    else:
+        raise ValueError("Could not find weather information on the page.")
 
 if __name__ == "__main__":
     city = "Sao+Paulo"
-    weather, temperature = fetch_weather(city)
-    print(f"The weather in {city.replace('+', ' ')} is {weather} with a temperature of {temperature}.")
+    try:
+        weather, temperature = fetch_weather(city)
+        print(f"The weather in {city.replace('+', ' ')} is {weather} with a temperature of {temperature}.")
+    except ValueError as e:
+        print(e)
